@@ -1,7 +1,7 @@
 # Data files (they are too large)
-.mtx
-.tsv
-.txt
+*.mtx
+*.tsv
+*.txt
 
 # Editors
 .vscode/
