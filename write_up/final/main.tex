@@ -199,6 +199,14 @@ To investigate this possibility, we ran this analysis again using only the first
 This analysis yielded a prediction accuracies of 56.6\% and 60.4\%, leading us to conclude that even the largest principal components encompass variances unrelated to disease status.
 
 \subsection*{scVI does something I hope}
+- train scvi on the AA data (seems to possibly not work as well)
+a) explore latent space
+- OR use pretrained scvi, transfer to AA data -- find bigger data of blood cells train SCVI, transfer to AA data real quick
+- OR use someone else's actual pretrained scvi
+* take AA data, embed using scvi model -> distribution in latent space. Do same with healthy data
+1. simple interpolation between samples from centroids of data domains
+2. build simple classifier from latent representations -> use to create a path from sample to altered sample (like in original plan) 
+
 
 \section{Conclusion}
 
