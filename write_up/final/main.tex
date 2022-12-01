@@ -99,8 +99,14 @@ However HSPCs are severely depleated in AA patients, making them a difficult tar
 Recent studies like \citet{tonglin_single-cell_2022} and \citet{zhu_single-cell_2021} have used single-cell RNA-sequencing (scRNA-seq) to perform differential expression analysis between healthy and AA patient HSPCs.
 These studies have thus far used PCA to reduce dataset dimensionality, followed by graph-based clustering and likelihood ratio tests to identify significantly differentially expressed genes between clusters \citep{zhu_single-cell_2021}.
 These studies have successfully identified differentially expressed genes between healthy and AA HSPCs.
-However, their accounting for noise and batch effects is limited to their initial dimension reduction and this initial dimension reduction assumes a generalized linear model is sufficient for accurately mapping onto the low-dimensional manifold underlying the data.
+However, their adjustments for noise and batch effects are limited to their initial dimension reductions.
+This initial dimension reduction assumes a generalized linear model is sufficient for accurately mapping onto the low-dimensional manifold underlying the data.
+This is a particularly problematic assumption in papers like \citet{tonglin_single-cell_2022} where samples were only taken from four patients (two healthy and two with AA).
+With such a low n of patients, it would be challenging to convincingly claim differences between AA and healthy clusters are due to disease status as opposed to being due to differences between individuals.
 
+In this project we aimed to explore methods of learning differences between healthy and AA HSPCs using the scRNA-seq data published by \citet{tonglin_single-cell_2022}.
+We aimed to develop models of both healthy and diseased HSPC transcriptome profiles to identify perturbations capable of moving a diseased HSPC to a healthy cell or vice versa.
+Our current proposed approach is based on machine learning methods we have learned in previous coursework. We may adjust our methods as we learn more about transcriptomics analysis in upcoming lectures.
 
 
 \subsection{Citations within the text}
@@ -124,32 +130,6 @@ produces
   \caption{Sample figure caption.}
 \end{figure}
 
-
-Note that publication-quality tables \emph{do not contain vertical rules.} We
-strongly suggest the use of the \verb+booktabs+ package, which allows for
-typesetting high-quality, professional tables:
-\begin{center}
-  \url{https://www.ctan.org/pkg/booktabs}
-\end{center}
-This package was used to typeset Table~\ref{sample-table}.
-
-
-\begin{table}
-  \caption{Sample table title}
-  \label{sample-table}
-  \centering
-  \begin{tabular}{lll}
-    \toprule
-    \multicolumn{2}{c}{Part}                   \\
-    \cmidrule(r){1-2}
-    Name     & Description     & Size ($\mu$m) \\
-    \midrule
-    Dendrite & Input terminal  & $\sim$100     \\
-    Axon     & Output terminal & $\sim$10      \\
-    Soma     & Cell body       & up to $10^6$  \\
-    \bottomrule
-  \end{tabular}
-\end{table}
 
 
 
