@@ -16,6 +16,8 @@
   andothers = {et al.},
 }
 
+\usepackage[pdftex]{graphicx}
+
 % ready for submission
 \usepackage[final,nonatbib]{neurips_2022}
 
@@ -45,7 +47,7 @@
 
 
 
-\title{scVI enables batch-effect and noise correction and highlights differences in HPSC transcriptional profiles of Aplastic Anemia patients and healthy donors}
+\title{scVI enables effective scRNA-seq data preprocessing and highlights differences in HPSC transcriptional profiles of Aplastic Anemia patients and healthy donors}
 
 
 % The \author macro works with any number of authors. There are two commands
@@ -58,8 +60,9 @@
 
 
 \author{%
-Yegor Kuznetsov$^{1*}$ \quad Sophia Jannetty$^{1*}$\\
-$^1$University of Washington\\
+Yegor Kuznetsov$^{1}$ \quad Sophia Jannetty$^{2}$\\
+$^1$University of Washington Department of Computer Science\\
+$^2$University of Washington Department of Biology\\
 \texttt{yegor@uw.edu}\\
 \texttt{jannetty@uw.edu}\\
 }
@@ -72,7 +75,12 @@ $^1$University of Washington\\
 
 
 \begin{abstract}
-  We should write this abstract paragraph last
+  Aplastic anemia (AA) is a devastating illness that is challenging to study.
+  Single-cell RNA-sequencing (scRNA-seq) datasets characterizing the transcriptional profiles of relevant cell types in AA patients have been published, but existing analyses of these datasets have been limited to clustering on dimensionalty-reduced data and performing differential expression analysis on seperate clusters.
+  Here, we perform our own analysis on scRNA-seq data published by \citet{tonglin_single-cell_2022}.
+  We begin by assessing the performance of a simple linear classifier model trained on the dimensionality-reduced data.
+  We then use scVI to do something.
+  We conclude that something.
 \end{abstract}
 
 
@@ -95,6 +103,7 @@ This treatment has been shown in limited clinical trials to improve blood produc
 
 Despite the severity of this disease, the mechanisms underlying its onset and the treatment options remain obscure due to limitations in experimental techniques.
 It is thought that T cells may target hematopoietic stem and progenitor cells (HSPCs), which are blood cell precursor cells, in patients with immune-mediated AA \citep{tonglin_single-cell_2022}.
+Understanding the differences between healthy and AA HSPCs could uncover the cause of the T cell targeting.
 However HSPCs are severely depleated in AA patients, making them a difficult target to study \citep{zhu_single-cell_2021}.
 Recent studies like \citet{tonglin_single-cell_2022} and \citet{zhu_single-cell_2021} have used single-cell RNA-sequencing (scRNA-seq) to perform differential expression analysis between healthy and AA patient HSPCs.
 These studies have thus far used PCA to reduce dataset dimensionality, followed by graph-based clustering and likelihood ratio tests to identify significantly differentially expressed genes between clusters \citep{zhu_single-cell_2021}.
@@ -104,84 +113,101 @@ This initial dimension reduction assumes a generalized linear model is sufficien
 This is a particularly problematic assumption in papers like \citet{tonglin_single-cell_2022} where samples were only taken from four patients (two healthy and two with AA).
 With such a low n of patients, it would be challenging to convincingly claim differences between AA and healthy clusters are due to disease status as opposed to being due to differences between individuals.
 
-In this project we aimed to explore methods of learning differences between healthy and AA HSPCs using the scRNA-seq data published by \citet{tonglin_single-cell_2022}.
-We aimed to develop models of both healthy and diseased HSPC transcriptome profiles to identify perturbations capable of moving a diseased HSPC to a healthy cell or vice versa.
-Our current proposed approach is based on machine learning methods we have learned in previous coursework. We may adjust our methods as we learn more about transcriptomics analysis in upcoming lectures.
+In this project we explored methods of learning differences between healthy and AA HSPCs using the scRNA-seq data published by \citet{tonglin_single-cell_2022}.
+We used computational methods to model both healthy and diseased HSPC transcriptome profiles with the goal of identifying perturbations capable of moving a diseased HSPC to a healthy cell or vice versa.
+Such identified perturbations could both suggest potential new therapies and help identify the mechanisms of AA onset and treatment.
+We have not yet reached this goal of identifying perturbations.
+However, our work sheds light on what methods are useful when working with data collected from a very small number of individuals.
 
 
-\subsection{Citations within the text}
+\section{Methods and abbreviated results}
 
-Of note is the command \verb+\citet+, which produces citations appropriate for
-use in inline text.  For example,
-\begin{verbatim}
-   \citet{giammarco_transplant_2018} investigated\dots
-\end{verbatim}
-produces
-\begin{quote}
-  \citet{giammarco_transplant_2018} investigated\dots
-\end{quote}
+\subsection{The Data}
+For this study we used the scRNA-seq data published by \citet{tonglin_single-cell_2022}.
+These data were from bone marrow samples taken from two healthy donors and two AA patients.
+These data comprise 20419 HSPCs (NUMBER AA and NUMBER healthy) with 33538 genes per cell.
+Sequencing was performed by 10x Genomics [CITE].
+
+\subsection{Data Preprocessing}
+We downloaded the data from the NCBI Gene Expression Omnibus [CITE https://www.ncbi.nlm.nih.gov/geo/GSE181989].
+We used the python package Scanpy[CITE THIS] to filter out all genes that [INSERT GENE THRESHOLD] and all cells that [INSERT CELL THRESHOLD].
+After filtering, we had [NUMBER] cells with [NUMBER] genes.
+[NUMBER] of these cells were from the two AA patients and [NUMBER] of these cells were from the healthy controls.
+DID WE DO ANY IMPUTATION HERE?
+
+\subsection{Principal Component and UMAP Visualizations}
+% In accordance with standards in the field, we wanted to visualize the data using principal component (PC) projection and UMAP.
+We used the Scanpy python package to make these visualizations.
+For the PC projection, we projected the data onto the first two principal components which captured 10.6\% and 2.7\% of the overall variance of the dataset respectively.
+We colored each cell by disease status (see Figure \ref{PCA_projections_disease}) and by individual (see Figure \ref{PCA_projections_individual}).
+
+\subsection{Linear Discriminant Analysis}
+We used the Scanpy python package to perform linear discriminant analysis (LDA) on the first 50 principal components of our data.
+We used 5-fold cross validation to assess the model's prediction accuracy.
+Our model accurately predicted the disease status of 98.2\% of the cells in the training data and 98.0\% of the cells in the test data.
+
+To assess whether LDA was distinguishing between transcriptome profiles of diseased vs healthy individuals or just differentiating between the individuals in general, we retrained the model using data from just two individuals (one sick and one diseased).
+We then used this model to predict the disease status of the other two individuals.
+We started by again using the first 50 principal components.
+Our model accurately predicted the disease status 48.5\% of the test cells.
+We switched the individuals that were used to train/test the model and found the resulting model accurately predicted the disease status of 67\% of the test cells.
+We also performed this analysis using the first 5 principal components, which yielded 56.6\% and 60.4\% testing accuracy for each training/test data pair.
+
+\subsection{scVI}
+We used the scvi-tools python package to perform scVI (CITE: https://docs.scvi-tools.org/en/stable/index.html) \citep{lopez_deep_2018}.
+INSERT INFORMATION ABOUT THE TECNICAL DETAILS HERE.
 
 
-\subsection{Figures}
+% TODO: Put these in the correct locations and make the captions fit the figures.
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5\textwidth]{disease_status.png}
+  \caption{Principal Component and UMAP Projection visualizations colored by disease status. 0 is healthy, 1 is AA.}
+  \label{PCA_projections_disease}
+\end{figure}
 
 \begin{figure}
   \centering
-  \fbox{\rule[-.5cm]{0cm}{4cm} \rule[-.5cm]{4cm}{0cm}}
-  \caption{Sample figure caption.}
+  \includegraphics[width=0.5\textwidth]{individual.png}
+  \caption{Principal Component and UMAP Projection visualizations colored by individual. Individuals 0 and 1 have AA. Individuals 2 and 3 are healthy controls.}
+  \label{PCA_projections_individual}
 \end{figure}
 
 
+\section{Discussion and Results}
 
+\subsection{Visualization reveals cells do not cluster by disease status}
+Existing AA scRNA-seq data analysis uses linear dimensionality reduction techniques as a preprocessing step prior to clustering.
+We began our analysis by following these same steps and assessing whether such preprocessing was sufficient for generating a dataset capable of training a simple but generalizable linear classifier.
+We first visualized our data following a tutorial provided by the Scanpy[CITE] python package and qualitatively noticed that the diseased and healthy cells do not seem to cluster distinctly (see Figure \ref{PCA_projections_disease}).
+We also noticed that cells from different individuals seemed to have very different transcriptional profiles (see Figure \ref{PCA_projections_individual}).
+This led us to hypothesize that a linear model would either perform poorly when predicting disease status or perform well by learning to distinguish between individuals instead of distinguishing between disease status.
 
-\subsection{Margins in \LaTeX{}}
+\subsection{LDA is insufficient for predicting disease status}
+We performed five-fold cross validation on an LDA model trained on the first 50 principal components of the dataset and found the prediction accuracy to be an outlandishly high 98\%.
+We subsequently hypothesised that this accuracy could be attributed to the model learning to distingish each individual as opposed to the model distinguishing between healthy and AA individuals.
+TO test this hypothesis, we used the same model hyperparameters but trained our model on data from exclusively one healthy and one AA individual.
+Our hypothesis was that if the model is truly learning to distinguish between illness status, a model trained on data from representative AA patients and healthy individuals should be able to accurately predict the disease status of cells from other AA and healthy patients.
+Conversely, if the model is learning to distingish individuals, a model trained on some individuals should not accurately predict the disease status of other individuals.
+Because our dataset only contains data from four individuals, we trained the model on data from two individuals (one sick and one AA) and tested the model using the other two patients' data.
+We then swapped the test and the training data and again assessed prediction accuracy.
+Our measured prediction accuracy was 48.5\% and 67\%.
+This decrease in accuracy supported our hypothesis that, even though it may be able to distinguish individuals, a simple linear model is not sufficient to reliably distinguish between AA and healthy cells.
 
+We next considered whether larger principal components contained the dimensions along which the AA and healthy cells separated most distinctly and whether small variance introduced by the smaller principal components may be making the task of performing LDA more challenging.
+To investigate this possibility, we ran this analysis again using only the first five principal components of the dataset.
+This analysis yielded a prediction accuracies of 56.6\% and 60.4\%, leading us to conclude that even the largest principal components encompass variances unrelated to disease status.
 
-Most of the margin problems come from figures positioned by hand using
-\verb+\special+ or other commands. We suggest using the command
-\verb+\includegraphics+ from the \verb+graphicx+ package. Always specify the
-figure width as a multiple of the line width as in the example below:
-\begin{verbatim}
-   \usepackage[pdftex]{graphicx} ...
-   \includegraphics[width=0.8\linewidth]{myfile.pdf}
-\end{verbatim}
-See Section 4.4 in the graphics bundle documentation
-(\url{http://mirrors.ctan.org/macros/latex/required/graphics/grfguide.pdf})
+\subsection*{scVI does something I hope}
 
+\section{Conclusion}
 
-A number of width problems arise when \LaTeX{} cannot properly hyphenate a
-line. Please give LaTeX hyphenation hints using the \verb+\-+ command when
-necessary.
-
-
-\begin{ack}
-
-\end{ack}
-
-
-\section*{References}
-
-
-References follow the acknowledgments. Use unnumbered first-level heading for
-the references. Any choice of citation style is acceptable as long as you are
-consistent. It is permissible to reduce the font size to \verb+small+ (9 point)
-when listing the references.
-Note that the Reference section does not count towards the page limit.
-\medskip
 
 
 {
 \small
 \printbibliography
 }
-
-
-\appendix
-
-\section{Appendix}
-
-
-Optionally include extra information (complete proofs, additional experiments and plots) in the appendix.
-This section will often be part of the supplemental material.
 
 
 \end{document}
