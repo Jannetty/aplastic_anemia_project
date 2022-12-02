@@ -126,23 +126,23 @@ However, our work sheds light on what methods are useful when working with data 
 For this study we used the scRNA-seq data published by \citet{tonglin_single-cell_2022}.
 These data were from bone marrow samples taken from two healthy donors and two AA patients.
 These data comprise 20419 HSPCs (NUMBER AA and NUMBER healthy) with 33538 genes per cell.
-Sequencing was performed by 10x Genomics [CITE].
+Sequencing was performed by 10x Genomics \citep{10X_genomics}.
 
 \subsection{Data Preprocessing}
-We downloaded the data from the NCBI Gene Expression Omnibus [CITE https://www.ncbi.nlm.nih.gov/geo/GSE181989].
-We used the python package Scanpy[CITE THIS] to filter out all genes that [INSERT GENE THRESHOLD] and all cells that [INSERT CELL THRESHOLD].
+We downloaded the data from the NCBI Gene Expression Omnibus (https://www.ncbi.nlm.nih.gov/geo/ , GEO accession:GSE181989).
+We used the python package Scanpy \citep{wolf_scanpy_2018} to filter out all genes that [INSERT GENE THRESHOLD] and all cells that [INSERT CELL THRESHOLD].
 After filtering, we had [NUMBER] cells with [NUMBER] genes.
 [NUMBER] of these cells were from the two AA patients and [NUMBER] of these cells were from the healthy controls.
 DID WE DO ANY IMPUTATION HERE?
 
 \subsection{Principal Component and UMAP Visualizations}
 % In accordance with standards in the field, we wanted to visualize the data using principal component (PC) projection and UMAP.
-We used the Scanpy python package to make these visualizations.
+We used the Scanpy python package \citep{wolf_scanpy_2018} to make these visualizations.
 For the PC projection, we projected the data onto the first two principal components which captured 10.6\% and 2.7\% of the overall variance of the dataset respectively.
 We colored each cell by disease status (see Figure \ref{PCA_projections_disease}) and by individual (see Figure \ref{PCA_projections_individual}).
 
 \subsection{Linear Discriminant Analysis}
-We used the Scanpy python package to perform linear discriminant analysis (LDA) on the first 50 principal components of our data.
+We used the Scanpy python package \citep{wolf_scanpy_2018} to perform linear discriminant analysis (LDA) on the first 50 principal components of our data.
 We used 5-fold cross validation to assess the model's prediction accuracy.
 Our model accurately predicted the disease status of 98.2\% of the cells in the training data and 98.0\% of the cells in the test data.
 
@@ -154,7 +154,7 @@ We switched the individuals that were used to train/test the model and found the
 We also performed this analysis using the first 5 principal components, which yielded 56.6\% and 60.4\% testing accuracy for each training/test data pair.
 
 \subsection{scVI}
-We used the scvi-tools python package to perform scVI (CITE: https://docs.scvi-tools.org/en/stable/index.html) \citep{lopez_deep_2018}.
+We used the scvi-tools python package to perform scVI \citep{lopez_deep_2018, gayoso_python_2022}.
 INSERT INFORMATION ABOUT THE TECNICAL DETAILS HERE.
 
 
@@ -186,7 +186,7 @@ This led us to hypothesize that a linear model would either perform poorly when 
 \subsection{LDA is insufficient for predicting disease status}
 We performed five-fold cross validation on an LDA model trained on the first 50 principal components of the dataset and found the prediction accuracy to be an outlandishly high 98\%.
 We subsequently hypothesised that this accuracy could be attributed to the model learning to distingish each individual as opposed to the model distinguishing between healthy and AA individuals.
-TO test this hypothesis, we used the same model hyperparameters but trained our model on data from exclusively one healthy and one AA individual.
+To test this hypothesis, we used the same model hyperparameters but trained our model on data from exclusively one healthy and one AA individual.
 Our hypothesis was that if the model is truly learning to distinguish between illness status, a model trained on data from representative AA patients and healthy individuals should be able to accurately predict the disease status of cells from other AA and healthy patients.
 Conversely, if the model is learning to distingish individuals, a model trained on some individuals should not accurately predict the disease status of other individuals.
 Because our dataset only contains data from four individuals, we trained the model on data from two individuals (one sick and one AA) and tested the model using the other two patients' data.
@@ -198,18 +198,22 @@ We next considered whether larger principal components contained the dimensions 
 To investigate this possibility, we ran this analysis again using only the first five principal components of the dataset.
 This analysis yielded a prediction accuracies of 56.6\% and 60.4\%, leading us to conclude that even the largest principal components encompass variances unrelated to disease status.
 
-\subsection*{scVI does something I hope}
-- train scvi on the AA data (seems to possibly not work as well)
-a) explore latent space
-- OR use pretrained scvi, transfer to AA data -- find bigger data of blood cells train SCVI, transfer to AA data real quick
-- OR use someone else's actual pretrained scvi
-* take AA data, embed using scvi model -> distribution in latent space. Do same with healthy data
-1. simple interpolation between samples from centroids of data domains
-2. build simple classifier from latent representations -> use to create a path from sample to altered sample (like in original plan) 
+\subsection{scVI does something I hope}
+We discovered scVI through our class reading and wanted to investigate its performance on the \citet{tonglin_single-cell_2022} data.
+We trained scVI on the \citet{tonglin_single-cell_2022} data using the scvi-tools python packge \citep{gayoso_python_2022} with the intention of exploring the differences in AA cell distributions vs healthy cell distributions in latent space.
+We next wanted to build a simple classifier using this latent representation in order to create a path between the two cell-type distributions.
+% - OR use pretrained scvi, transfer to AA data -- find bigger data of blood cells train SCVI, transfer to AA data real quick
+% - OR use someone else's actual pretrained scvi
+% 1. simple interpolation between samples from centroids of data domains
+% 2. build simple classifier from latent representations -> use to create a path from sample to altered sample (like in original plan) 
 
 
 \section{Conclusion}
-
+scRNA-seq data is challenging to analyze due to the inherent noise, batch effects, dropout rates, and differences between individuals.
+The challenge of accounting for person-to-person variability is amplified when there are a small number of individuals in your dataset.
+The \citet{tonglin_single-cell_2022} data gave us an opportunity to experiment with a low-individual scRNA-seq dataset while working towards answering mechanistic questions about a devistating disease.
+Our investigations revealed that simple linear models are insufficient for discriminating between disease states with such a low number of individuals.
+Something about scVI.
 
 
 {
