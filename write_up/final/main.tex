@@ -47,7 +47,7 @@
 
 
 
-\title{scVI enables effective scRNA-seq data preprocessing and highlights differences in HPSC transcriptional profiles of Aplastic Anemia patients and healthy donors}
+\title{From healthy to diseased; using scVI to detect nonlinear gene expression changes on paths between healthy and sick cells in latent space}
 
 
 % The \author macro works with any number of authors. There are two commands
@@ -75,31 +75,55 @@ $^2$University of Washington Department of Biology\\
 
 
 \begin{abstract}
-  Aplastic anemia (AA) is a devastating illness that is challenging to study.
-  Single-cell RNA-sequencing (scRNA-seq) datasets characterizing the transcriptional profiles of relevant cell types in AA patients have been published, but existing analyses of these datasets have been limited to clustering on dimensionalty-reduced data and performing differential expression analysis on seperate clusters.
-  Here, we perform our own analysis on scRNA-seq data published by \citet{tonglin_single-cell_2022}.
-  We begin by assessing the performance of a simple linear classifier model trained on the dimensionality-reduced data.
-  We then use scVI to do something.
-  We conclude that something.
+  Researcers comparing sick cell transcription profiles to healthy cell transcription profiles may miss important information about intermediate transitioning transcription profiles not represented in healthy or sick datasets.
+  Without time-series data calibrated to degree of disease progression, analyzing changes in transcriptional profiles as diseases progress over time can be challenging.
+  Here we investigate the possibility of generating and analyzing artificial transcription data for cells transitioning from a healthy to a sick state.
+  Using the deep generative modeling technique scVI \citep{lopez_deep_2018}, we embed published scRNAseq data from sick and healty cells into a learned 10-dimensional latent space.
+  We then sample the latent space on paths between sick and healthy cells in latent space and use the model decoder to generate transcriptional profiles for cells that would exist at each location.
+  We then analyze these transcriptomes and identify genes that have a nonlinear predicted trajectory on the path between healthy and sick.
+  We propose future methods for investigating and validating this method.
 \end{abstract}
 
 
 \section{Introduction}
 
+Several recent papers have demonstrated how neural networks can be used to embed scRNA-seq data in low-dimensional latent space \citep{ding_interpretable_2018,wang_vasc_2018,gronbech_scvae_2018,eraslan_single-cell_2019}.
+Emphasized utilities of these methods have included effective denoising \citep{eraslan_single-cell_2019}, dimensionality reduction \citep{wang_vasc_2018,ding_interpretable_2018}, and visualization \citep{wang_vasc_2018}.
+Several of these methods also provide decoders that allow for translation from latent space back into gene space.
+\citet{gronbech_scvae_2018} and \citet{lopez_deep_2018} both discuss decoding latent-space representations of cells by using a nonlinear decoder to generate a posterior estimate of the expression of each gene in a cell.
+Our project is focused on investigating the possibility of exploiting these decoders to learn about changes in gene expression patterns as a cell transitions from healthy to sick.
+
+Throughout this project we aim to explore the following enormous assumption; given a latent space in which healthy and sick cells cluster apart from each other such that there are healthy regions and sick regions in the space, do decoded locations between these regions correspond to transcriptional profiles of cells in transition between healthy and sick?
+Furthermore, do decoded locations closer to healthy regions than to sick regions correspond to transcriptional profiles of cells that are only slightly sick (and vice versa)?
+We begin by operating as though this is a fair assumption.
+We tried using this method using two separate datasets (both relevant to hematopoietic stem and progenitor cells (HSPCs)).
+For each, we trained the scVI model on scRNA-seq data with sick and healthy labels.
+Once scVI embedded each cell in latent space, we visualized clustering of the sick and healthy labels in latent space using UMAP projections.
+We then drew lines between sick individuals and healthy individuals.
+We selected evenly distributed points along these lines and decoded each location into its own distinct transcriptional profile.
+We labeled the health score of each artifical cell as its distance from the sick end of the line (the healthy cell itself has a healthy score of 1, the sick cell has a healthy score of 0, an artifical cell located halfway on the line connecting the healthy and sick cells has a healthy score of .5).
+We then use Hotspot \citep{detomaso_hotspot_2021} to 
+
+% The scVI method described in \citet{lopez_deep_2018} is unique from previous methods due to its explicit consideration of library size and batch effects.
+% \citet{lopez_deep_2018} demonstrated that their model could be used to perform batch removal, normalization, dimensionality reduction, clustering, and differential expression analysis.
+
+For this project, we worked with two different datasets; an Aplastic Anemia dataset published by \citet{tonglin_single-cell_2022}, and a Chronic Myelomonocytic Leukemia dataset published by \citet{ferrall-fairbanks_progenitor_2022}.
+
+\subsection{Aplastic Anemia}
 Aplastic anemia (AA) is a condition in which a patient\textquotesingle s bone marrow fails to form enough red blood cells, white blood cells, and platelets, resulting in pancytopenia \citep{young_aplastic_2018}.
 Pathophysiological mechanisms of this disease include direct damage to bone marrow (commonly from chemotherapy), germ line loss-of-function mutations that interfere with blood-cell precursor DNA repair pathways, and autoimmune attack \citep{young_aplastic_2018}. 
 
 Current options for treating AA fall within three categories, each of which attempts to address pancytopenia in a different way.
 The first, bone marrow transplantation, aims to replace failing bone marrow with healthy donor marrow. 
-This is a curative treatment, but is limited by the prevalence of graft-versus-host disease and by its reliance on tissue donors \citep{young_aplastic_2018}.
+% This is a curative treatment, but is limited by the prevalence of graft-versus-host disease and by its reliance on tissue donors \citep{young_aplastic_2018}.
 % Furthermore, the survival rate for adults over the age of 40 following bone marrow transplantation is only around 50\% \citep{giammarco_transplant_2018}.
 The second, immunosuppression, aims to eliminate immune-mediated AA.
-This category includes treatment with antilymphocyte globulin (combined with cyclosporine), which has a mild lymphocyte-depleting effect.
-This treatment leads to improved blood production in about 66\% of patients \citep{bacigalupo_how_2017}, however 30\% to 60\% of these patients experience relapse that requires years of continued cyclosporine therapy \citep{scheinberg_activity_2012}.
+% This category includes treatment with antilymphocyte globulin (combined with cyclosporine), which has a mild lymphocyte-depleting effect.
+% This treatment leads to improved blood production in about 66\% of patients \citep{bacigalupo_how_2017}, however 30\% to 60\% of these patients experience relapse that requires years of continued cyclosporine therapy \citep{scheinberg_activity_2012}.
 Despite the success of immunosuppressant treatments, the mechanisms by which the immune system damages bone marrow remain unknown; the strongest evidence for immune-mediation of aplastic anemia is the effectiveness of immunosuppressant treatments \citep{young_aplastic_2018}.
 The third treatment category, stem-cell stimulation, aims to promote stem-cell regeneration within the patient directly.
-One such treatment involves administrating eltrombopag, a synthetic mimic of thrombopoietin (a hormone that stimulates the production of platelets).
-This treatment has been shown in limited clinical trials to improve blood production in 80\% of treated patients, though the mechanism of this treatment remains unknown \citep{young_aplastic_2018}.
+% One such treatment involves administrating eltrombopag, a synthetic mimic of thrombopoietin (a hormone that stimulates the production of platelets).
+% This treatment has been shown in limited clinical trials to improve blood production in 80\% of treated patients, though the mechanism of this treatment remains unknown \citep{young_aplastic_2018}.
 
 Despite the severity of this disease, the mechanisms underlying its onset and the treatment options remain obscure due to limitations in experimental techniques.
 It is thought that T cells may target hematopoietic stem and progenitor cells (HSPCs), which are blood cell precursor cells, in patients with immune-mediated AA \citep{tonglin_single-cell_2022}.
@@ -119,29 +143,31 @@ Such identified perturbations could both suggest potential new therapies and hel
 We have not yet reached this goal of identifying perturbations.
 However, our work sheds light on what methods are useful when working with data collected from a very small number of individuals.
 
+\subsection{Chronic Myelomonocytic Leukemia}
 
 \section{Methods and abbreviated results}
 
-\subsection{The Data}
+\subsection{Aplastic Anemia data analysis}
+
+\subsubsection{The Data}
 For this study we used the scRNA-seq data published by \citet{tonglin_single-cell_2022}.
 These data were from bone marrow samples taken from two healthy donors and two AA patients.
-These data comprise 20419 HSPCs (NUMBER AA and NUMBER healthy) with 33538 genes per cell.
+These data comprise 23685 HSPCs (14163 AA and 9522 healthy) with 33538 genes per cell.
 Sequencing was performed by 10x Genomics \citep{10X_genomics}.
 
-\subsection{Data Preprocessing}
-We downloaded the data from the NCBI Gene Expression Omnibus (https://www.ncbi.nlm.nih.gov/geo/ , GEO accession:GSE181989).
-We used the python package Scanpy \citep{wolf_scanpy_2018} to filter out all genes that [INSERT GENE THRESHOLD] and all cells that [INSERT CELL THRESHOLD].
-After filtering, we had [NUMBER] cells with [NUMBER] genes.
-[NUMBER] of these cells were from the two AA patients and [NUMBER] of these cells were from the healthy controls.
-DID WE DO ANY IMPUTATION HERE?
+\subsubsection{Data Preprocessing}
+We downloaded the data from the NCBI Gene Expression Omnibus (https://www.ncbi.nlm.nih.gov/geo/ , GEO accession: GSE181989).
+We used the python package Scanpy \citep{wolf_scanpy_2018} to filter out all genes that were in fewer than 3 cells and all cells that had expression of fewer than 200 genes.
+After filtering, we had 22505 cells with 20059 genes.
+[NUMBER] of these cells were from the two AA patients and [NUMBER] of these cells were from the two healthy controls.
 
-\subsection{Principal Component and UMAP Visualizations}
+\subsubsection{Principal Component and UMAP Visualizations}
 % In accordance with standards in the field, we wanted to visualize the data using principal component (PC) projection and UMAP.
 We used the Scanpy python package \citep{wolf_scanpy_2018} to make these visualizations.
 For the PC projection, we projected the data onto the first two principal components which captured 10.6\% and 2.7\% of the overall variance of the dataset respectively.
 We colored each cell by disease status (see Figure \ref{PCA_projections_disease}) and by individual (see Figure \ref{PCA_projections_individual}).
 
-\subsection{Linear Discriminant Analysis}
+\subsubsection{Linear Discriminant Analysis}
 We used the Scanpy python package \citep{wolf_scanpy_2018} to perform linear discriminant analysis (LDA) on the first 50 principal components of our data.
 We used 5-fold cross validation to assess the model's prediction accuracy.
 Our model accurately predicted the disease status of 98.2\% of the cells in the training data and 98.0\% of the cells in the test data.
@@ -153,7 +179,7 @@ Our model accurately predicted the disease status 48.5\% of the test cells.
 We switched the individuals that were used to train/test the model and found the resulting model accurately predicted the disease status of 67\% of the test cells.
 We also performed this analysis using the first 5 principal components, which yielded 56.6\% and 60.4\% testing accuracy for each training/test data pair.
 
-\subsection{scVI}
+\subsubsection{scVI}
 We used the scvi-tools python package to perform scVI \citep{lopez_deep_2018, gayoso_python_2022}.
 INSERT INFORMATION ABOUT THE TECNICAL DETAILS HERE.
 
