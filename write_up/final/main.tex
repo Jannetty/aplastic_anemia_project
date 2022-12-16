@@ -91,9 +91,9 @@ Several recent papers have demonstrated how neural networks can be used to embed
 Emphasized utilities of these methods have included effective denoising \citep{eraslan_single-cell_2019}, dimensionality reduction \citep{wang_vasc_2018,ding_interpretable_2018}, and visualization \citep{wang_vasc_2018}.
 Several of these methods also provide decoders that allow for translation from latent space back into gene space.
 \citet{gronbech_scvae_2018} and \citet{lopez_deep_2018} both discuss decoding latent-space representations of cells by using a nonlinear decoder to generate a posterior estimate of the expression of each gene in a cell.
-Our project is focused on investigating the possibility of exploiting these decoders to learn about changes in gene expression patterns as a cell transitions from healthy to sick.
+Our project is focused on investigating the possibility of using these tools to learn about changes in gene expression patterns as a cell transitions from healthy to sick.
 
-Throughout this project we aim to explore the following enormous assumption; given a latent space in which healthy and sick cells cluster apart from each other such that there are healthy regions and sick regions in the space, do decoded locations between these regions correspond to transcriptional profiles of cells in transition between healthy and sick?
+Throughout this project we aim to explore the following enormous assumption; given a latent space in which healthy and sick cells cluster apart from each other (such that there are healthy regions and sick regions in the space), do decoded locations between these regions correspond to transcriptional profiles of cells in transition between healthy and sick?
 Furthermore, do decoded locations closer to healthy regions than to sick regions correspond to transcriptional profiles of cells that are only slightly sick (and vice versa)?
 We begin by operating as though this is a fair assumption.
 We tried using this method using two separate datasets (both relevant to hematopoietic stem and progenitor cells (HSPCs)).
@@ -101,13 +101,44 @@ For each, we trained the scVI model on scRNA-seq data with sick and healthy labe
 Once scVI embedded each cell in latent space, we visualized clustering of the sick and healthy labels in latent space using UMAP projections.
 We then drew lines between sick individuals and healthy individuals.
 We selected evenly distributed points along these lines and decoded each location into its own distinct transcriptional profile.
-We labeled the health score of each artifical cell as its distance from the sick end of the line (the healthy cell itself has a healthy score of 1, the sick cell has a healthy score of 0, an artifical cell located halfway on the line connecting the healthy and sick cells has a healthy score of .5).
-We then use Hotspot \citep{detomaso_hotspot_2021} to 
+For each gene, we plotted each point's predicted expression given its interpolation alpha (the interpolation alpha being each point's distance from the sick end of the line such that the healthy cell itself has an interpolation alpha of 1, the sick cell has an interpolation alpha of 0, an artifical cell located halfway on the line connecting the healthy and sick cells has an interpolation alpha of .5, see ).
+
+
 
 % The scVI method described in \citet{lopez_deep_2018} is unique from previous methods due to its explicit consideration of library size and batch effects.
 % \citet{lopez_deep_2018} demonstrated that their model could be used to perform batch removal, normalization, dimensionality reduction, clustering, and differential expression analysis.
 
 For this project, we worked with two different datasets; an Aplastic Anemia dataset published by \citet{tonglin_single-cell_2022}, and a Chronic Myelomonocytic Leukemia dataset published by \citet{ferrall-fairbanks_progenitor_2022}.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.9\textwidth]{cropped_motivation.jpg}
+  \caption{Project motivation.
+  Differential expression analysis is effective at identifying genes that have different rates of transcription between healthy and sick cells.
+  However, differential expression analysis may not identify genes that have transient changes in expression as cells transition from healthy to sick.}
+  \label{motivation}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.9\textwidth]{cropped_approach.jpg}
+  \caption{A schematic of our approach. 
+  We trained scVI on scRNA-seq data of healthy and diseased cells.
+  We then sampled locations on the lines between healthy and diseased cells in latent space and used scVI's decoder to generate transcriptional profiles from these sampled locations.
+  We then analyzed the changes in expression of each gene over time.}
+  \label{approach}
+\end{figure}
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5\textwidth]{SERPINB1.jpg}
+  \caption{An example of a highly ranked gene in our analysis.
+  SERPINB1 is a neutrophil serine protease inhibitor that protects the cell from proteases released in the cytoplasm during stress or infection.}
+  \label{SERPINB1_graph}
+\end{figure}
+
+We selected 100 random healthy cells and 100 random diseased cells and drew 100 lines connecting these cells’ points in latent space. We sampled 50 linearly distributed points in the latent space on the lines connecting each healthy cell to each diseased cell and decoded these locations into transcriptional profiles. We then made plots for each gene showing the transcriptional trajectories seen across these 100 different paths through latent space. We fit linear and quadratic lines to each of these plots and calculated the sum of residuals for the 
 
 \subsection{Aplastic Anemia}
 Aplastic anemia (AA) is a condition in which a patient\textquotesingle s bone marrow fails to form enough red blood cells, white blood cells, and platelets, resulting in pancytopenia \citep{young_aplastic_2018}.
