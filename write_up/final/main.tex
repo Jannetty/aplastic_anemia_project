@@ -87,6 +87,10 @@ $^2$University of Washington Department of Biology\\
 
 \section{Introduction}
 
+Differential expression analysis is a common technique for assessing differences between transcriptional profiles of healthy and sick cells\citep{anders_differential_2010}.
+However, differential expression analysis may miss transient changes in expression that occur as a cell transitions from healthy to sick (Figure \ref*{motivation}).
+We aim to develop a technique that builds on recent advances in scRNAseq analysis to address this limitation.
+
 Several recent papers have demonstrated how neural networks can be used to embed scRNA-seq data in low-dimensional latent space \citep{ding_interpretable_2018,wang_vasc_2018,gronbech_scvae_2018,eraslan_single-cell_2019}.
 Emphasized utilities of these methods have included effective denoising \citep{eraslan_single-cell_2019}, dimensionality reduction \citep{wang_vasc_2018,ding_interpretable_2018}, and visualization \citep{wang_vasc_2018}.
 Several of these methods also provide decoders that allow for translation from latent space back into gene space.
@@ -101,6 +105,15 @@ For each, we trained the scVI model on scRNA-seq data with sick and healthy labe
 Once scVI embedded each cell in latent space, we sampled the space between healthy and sick cells and used the model's nonlinear decoder to generate transcriptional profiles corresponding to each location.
 We then analyzed the model-predicted changes in gene expressions.
 Figure \ref*{approach} gives a broad overview of our approach.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.9\textwidth]{cropped_motivation.jpg}
+  \caption{Project motivation.
+  Differential expression analysis is effective at identifying genes that have different rates of transcription between healthy and sick cells.
+  However, differential expression analysis may not identify genes that have transient changes in expression as cells transition from healthy to sick.}
+  \label{motivation}
+\end{figure}
 
 \subsection{Related Work}
 Our method heavily builds upon pseudotime.
@@ -132,15 +145,6 @@ For this project, we worked with two different datasets; an Aplastic Anemia data
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.9\textwidth]{cropped_motivation.jpg}
-  \caption{Project motivation.
-  Differential expression analysis is effective at identifying genes that have different rates of transcription between healthy and sick cells.
-  However, differential expression analysis may not identify genes that have transient changes in expression as cells transition from healthy to sick.}
-  \label{motivation}
-\end{figure}
-
-\begin{figure}
-  \centering
   \includegraphics[width=0.9\textwidth]{cropped_approach.jpg}
   \caption{A schematic of our approach. 
   We trained scVI on scRNA-seq data of healthy and diseased cells.
@@ -153,30 +157,28 @@ For this project, we worked with two different datasets; an Aplastic Anemia data
 \begin{figure}
   \centering
   \includegraphics[width=0.5\textwidth]{SERPINB1.jpg}
-  \caption{An example of a highly ranked gene in our analysis.
+  \caption{An example of a highly ranked gene in our analysis generated from the \citet{ferrall-fairbanks_progenitor_2022} Leukemia data.
   SERPINB1 is a neutrophil serine protease inhibitor that protects the cell from proteases released in the cytoplasm during stress or infection.}
   \label{SERPINB1_graph}
 \end{figure}
 
-We selected 100 random healthy cells and 100 random diseased cells and drew 100 lines connecting these cells’ points in latent space. We sampled 50 linearly distributed points in the latent space on the lines connecting each healthy cell to each diseased cell and decoded these locations into transcriptional profiles. We then made plots for each gene showing the transcriptional trajectories seen across these 100 different paths through latent space. We fit linear and quadratic lines to each of these plots and calculated the sum of residuals for the 
-
-\subsection{Aplastic Anemia}
+\subsubsection{Aplastic Anemia}
 Aplastic anemia (AA) is a condition in which a patient\textquotesingle s bone marrow fails to form enough red blood cells, white blood cells, and platelets, resulting in pancytopenia \citep{young_aplastic_2018}.
 Pathophysiological mechanisms of this disease include direct damage to bone marrow (commonly from chemotherapy), germ line loss-of-function mutations that interfere with blood-cell precursor DNA repair pathways, and autoimmune attack \citep{young_aplastic_2018}. 
 
-Current options for treating AA fall within three categories, each of which attempts to address pancytopenia in a different way.
-The first, bone marrow transplantation, aims to replace failing bone marrow with healthy donor marrow. 
+% Current options for treating AA fall within three categories, each of which attempts to address pancytopenia in a different way.
+% The first, bone marrow transplantation, aims to replace failing bone marrow with healthy donor marrow. 
 % This is a curative treatment, but is limited by the prevalence of graft-versus-host disease and by its reliance on tissue donors \citep{young_aplastic_2018}.
 % Furthermore, the survival rate for adults over the age of 40 following bone marrow transplantation is only around 50\% \citep{giammarco_transplant_2018}.
-The second, immunosuppression, aims to eliminate immune-mediated AA.
+% The second, immunosuppression, aims to eliminate immune-mediated AA.
 % This category includes treatment with antilymphocyte globulin (combined with cyclosporine), which has a mild lymphocyte-depleting effect.
 % This treatment leads to improved blood production in about 66\% of patients \citep{bacigalupo_how_2017}, however 30\% to 60\% of these patients experience relapse that requires years of continued cyclosporine therapy \citep{scheinberg_activity_2012}.
-Despite the success of immunosuppressant treatments, the mechanisms by which the immune system damages bone marrow remain unknown; the strongest evidence for immune-mediation of aplastic anemia is the effectiveness of immunosuppressant treatments \citep{young_aplastic_2018}.
-The third treatment category, stem-cell stimulation, aims to promote stem-cell regeneration within the patient directly.
+% Despite the success of immunosuppressant treatments, the mechanisms by which the immune system damages bone marrow remain unknown; the strongest evidence for immune-mediation of aplastic anemia is the effectiveness of immunosuppressant treatments \citep{young_aplastic_2018}.
+% The third treatment category, stem-cell stimulation, aims to promote stem-cell regeneration within the patient directly.
 % One such treatment involves administrating eltrombopag, a synthetic mimic of thrombopoietin (a hormone that stimulates the production of platelets).
 % This treatment has been shown in limited clinical trials to improve blood production in 80\% of treated patients, though the mechanism of this treatment remains unknown \citep{young_aplastic_2018}.
 
-Despite the severity of this disease, the mechanisms underlying its onset and the treatment options remain obscure due to limitations in experimental techniques.
+Despite the severity of this disease, the mechanisms underlying its onset remain obscure due to limitations in experimental techniques.
 It is thought that T cells may target hematopoietic stem and progenitor cells (HSPCs), which are blood cell precursor cells, in patients with immune-mediated AA \citep{tonglin_single-cell_2022}.
 Understanding the transcriptional differences an HSPCs undergoes as it progresses from healthy to AA could uncover the cause of the T cell targeting.
 However HSPCs are severely depleated in AA patients, making them a difficult target to study \citep{zhu_single-cell_2021}.
@@ -196,8 +198,23 @@ We aim to identify potential transient changes in gene expression that character
 % We have not yet reached this goal of identifying perturbations.
 % However, our work sheds light on what methods are useful when working with data collected from a very small number of individuals.
 
-\subsection{Chronic Myelomonocytic Leukemia}
-\citet{ferrall-fairbanks_progenitor_2022} 
+\subsubsection{Chronic Myelomonocytic Leukemia}
+We selected the Chronic Myelomonocytic Leukemia data published by \citet{ferrall-fairbanks_progenitor_2022} because it was a large dataset (41,521 healthy cells from 5 individuals and 120,543 sick cells from 26 individuals) and because it was entirely cells from a very specific cell type (HSPCs expressing CD34).
+We wanted a large number of individuals represented in the dataset while making sure the greatest differences between cells would be disease status as opposed to cell type.
+The similarity of cell type to our AA data was also convenient in our overall familiarity with the cells.
+
+\subsubsection{Limitations of our Datasets and Potential Future Dataset of Interest}
+We began our project inspired to pursue research relevant to Aplastic Anemia.
+However the focus of our project has shifted and unfortunately the datasets we used are not optimal for investigating our new technique.
+The \citet{tonglin_single-cell_2022} data is too small to confidently train a nonlinear encoder or decoder.
+The \citet{ferrall-fairbanks_progenitor_2022} data is from cancer patients, and cancer is a poor example of a disease in which cells exist on a spectrum of sickness.
+Cells can turn from healthy to cancerous, but once a cell is cancerous all its descendents will be cancerous.
+It is therefore most likely that the cancer cells in the dataset never transitioned from healthy to cancerous, making this a bad choice of datasets for investigating our new method.
+
+The ideal dataset would be time-series cell-type-specific transcriptional data from cells undergoing a well-characterized progression.
+Time-course differentiation data could be perfect as we could train our model on data from the first and last time points and compare our model-generated intermediate transcriptional profiles to the transcriptional profiles of the cells at intermediate time points.
+We have identified the data published \citet{lu_single-cell_2020} as a potential dataset of interest for future investigation of this method.
+This dataset would need to be filtered for a specific cell type, but it is in-vitro expression data with many replicates and multiple time points.
 
 \section{Methods and abbreviated results}
 
@@ -206,6 +223,10 @@ We then drew lines between sick individuals and healthy individuals.
 We selected evenly distributed points along these lines and decoded each location into its own distinct transcriptional profile.
 For each gene, we plotted each point's predicted expression given its interpolation alpha (the interpolation alpha being each point's distance from the sick end of the line such that the healthy cell itself has an interpolation alpha of 1, the sick cell has an interpolation alpha of 0, an artifical cell located halfway on the line connecting the healthy and sick cells has an interpolation alpha of .5, see ).
 
+We selected 100 random healthy cells and 100 random diseased cells and drew 100 lines connecting these cells\textquotesingle points in latent space.
+We randomly sampled one point in the latent space on each line and decoded these locations into transcriptional profiles.
+We then made plots for each gene showing the transcriptional trajectories seen across these 100 different paths through latent space.
+We fit linear and quadratic lines to each of these plots and calculated the sum of residuals for the 
 
 \subsection{Aplastic Anemia data analysis}
 
