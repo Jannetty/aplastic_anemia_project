@@ -17,6 +17,7 @@
 }
 
 \usepackage[pdftex]{graphicx}
+\usepackage{mathtools}  
 
 % ready for submission
 \usepackage[final,nonatbib]{neurips_2022}
@@ -267,17 +268,27 @@ We colored each cell by disease status (see Figure \ref{cancer_PCA_projections})
 
 \subsubsection{Training and Sampling from the Latent Space}
 We used the SCVI python package to perform SCVI on each dataset \citep{lopez_deep_2018}.
+Through training, the SCVI algorithm found a nonlinear encoder for embedding each cell in latent space and a nonlinear decoder for translating from this latent space back into transcriptional profiles.
 We selected 100 random healthy cells and 100 random diseased cells and drew 100 lines connecting these cells\textquotesingle points in latent space.
 We randomly sampled one point in the latent space on each line and decoded these locations into transcriptional profiles.
 We then made plots for each gene showing the transcriptional trajectories seen across these 100 different paths through latent space.
 For each gene, we plotted each point's predicted expression given its interpolation alpha (the interpolation alpha being each point's distance from the sick end of the line such that the healthy cell itself has an interpolation alpha of 1, the sick cell has an interpolation alpha of 0, an artifical cell located halfway on the line connecting the healthy and sick cells has an interpolation alpha of .5, see Figure \ref{SERPINB1_graph}).
-We fit linear and quadratic lines to each of these plots and calculated the sum of residuals for the 
+
+To identify the genes our model predicts change nonlinearly over the transition from sick to healthy states, we calculated a nonlinearity score.
+We defined this score as the sum of residuals for a quadratic line of best fit divided by the sum of residuals for a linear line of best fit for each gene's plot (see Equation \ref*{linearity_score}).
+
+
+\begin{equation}
+  \label{linearity_score}
+  \frac{\text{quadratic sum of residuals}}{\text{linear sum of residuals}}
+\end{equation}
 
 \begin{figure}
   \centering
   \includegraphics[width=0.5\textwidth]{SERPINB1.jpg}
   \caption{An example of a highly ranked gene in our analysis generated from the \citet{ferrall-fairbanks_progenitor_2022} Leukemia data.
-  SERPINB1 is a neutrophil serine protease inhibitor that protects the cell from proteases released in the cytoplasm during stress or infection.}
+  The quadratic and linear model fits are both shown.
+  The protein SERPINB1 is a neutrophil serine protease inhibitor that protects the cell from proteases released in the cytoplasm during stress or infection.}
   \label{SERPINB1_graph}
 \end{figure}
 
