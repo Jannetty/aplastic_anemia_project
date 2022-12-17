@@ -76,10 +76,10 @@ $^2$University of Washington Department of Biology\\
 
 
 \begin{abstract}
-  Researcers comparing sick cell transcriptional profiles to healthy cell transcriptional profiles may miss important information about intermediate transitioning transcription profiles not represented in healthy or sick datasets.
+  Researchers comparing sick cell transcriptional profiles to healthy cell transcriptional profiles may miss important information about intermediate transitioning transcription profiles not represented in healthy or sick datasets.
   Without time-series data calibrated to degree of disease progression, analyzing changes in transcriptional profiles as diseases progress over time can be challenging.
   Here we investigate the possibility of generating and analyzing artificial transcription data for cells transitioning from a healthy to a sick state.
-  Using the deep generative modeling technique scVI \citep{lopez_deep_2018}, we embed published scRNAseq data from sick and healty cells into a learned 10-dimensional latent space.
+  Using the deep generative modeling technique scVI \citep{lopez_deep_2018}, we embed published scRNAseq data from sick and healthy cells into a learned 10-dimensional latent space.
   We then sample the latent space on paths between sick and healthy cells in latent space and use the model decoder to generate transcriptional profiles for cells that would exist at each location.
   We then analyze these transcriptomes and identify genes that have a nonlinear predicted trajectory on the path between healthy and sick.
   We propose future methods for investigating and validating this method.
@@ -125,20 +125,20 @@ The method then embeds this data in a latent space with an enforced structure re
 The resulting latent dimension corresponds to pseudotime.
 Using this method, researchers can take a set of transcriptional profiles and order them by their phase in progression between one state and another.
 However, this method is both supervised (in that it imposes a time-related restraint on its latent space) and is only effective on datasets in which cells are at various stages of progression.
-This method cannot be used to generate predicted transcriptional profiles of cells at a certain phase of transition if cells in that phase of transition do not exist in the dataset.
+This method cannot be used to generate predicted transcriptional profiles of cells at a certain phase of transition if cells in that phase of transition do not exist in the dataset. Note that in many cases, including labeled cells in a partial state of transition in a dataset can be either impossible or infeasible. 
 
 Our method is also related to pathway analysis methods like TIPS \citep{zheng_tips_2021} and MetaCell \citep{baran_metacell_2019}.
 TIPS orders cells in pseudotime and then uses prior knowledge of the data to investigate changes in specific, hypothetically relevant genes' expressions as cells progress through pseudotime \citep{zheng_tips_2021}.
 This method is an exciting progression of pseudotime, however it also can only draw observations about changes in gene expression levels captured within the dataset.
 Additionally, TIPS relies on prior knowledge to identify genes to investigate.
 MetaCell generates composite cell profiles from cells that cluster by similarity to minimize noise, allowing for analysis between different cell types.
-This method also has a supervised component (in that the genes used to calculate similarity between cells are selected by the researcher) and does not ensure that cells at different phases in a transition will be represented in seperate composite profiles.
+This method also has a supervised component (in that the genes used to calculate similarity between cells are selected by the researcher) and does not ensure that cells at different phases in a transition will be represented in separate composite profiles.
 
 Our work is, to our knowledge, unique in two ways.
 First, our method aims to identify transcriptional changes over transitional phases without assuming cells of each phase are represented in the dataset.
 We are assuming we have a starting point and an ending point, and are generating transcriptional profiles for intermediate transitional phases sampling the latent space between these starting and ending points.
-Second, our method is entirely unsupervised.
-We aim to detect genes that undergo transcriptional changes over a transition with no prior knowledge of the cells or the transition in place.
+Second, our method is entirely unsupervised with regards to the model itself.
+We aim to detect genes that undergo transcriptional changes over a transition with no prior knowledge of the cells or the transition in place, aside from the labels used for interpolation targets. Essentially, we operate with an assumed pseudotime without enforcing it (due to it not being strictly applicable in this context).
 
 % The scVI method described in \citet{lopez_deep_2018} is unique from previous methods due to its explicit consideration of library size and batch effects.
 % \citet{lopez_deep_2018} demonstrated that their model could be used to perform batch removal, normalization, dimensionality reduction, clustering, and differential expression analysis.
@@ -202,7 +202,7 @@ We began our project inspired to pursue research relevant to Aplastic Anemia.
 However the focus of our project has shifted and unfortunately the datasets we used are not optimal for investigating our new technique.
 The \citet{tonglin_single-cell_2022} data is too small to confidently train a nonlinear encoder or decoder.
 The \citet{ferrall-fairbanks_progenitor_2022} data is from cancer patients, and cancer is a poor example of a disease in which cells exist on a spectrum of sickness.
-Cells can turn from healthy to cancerous, but once a cell is cancerous all its descendents will be cancerous.
+Cells can turn from healthy to cancerous, but once a cell is cancerous all its descendants will be cancerous.
 It is therefore most likely that the cancer cells in the dataset never transitioned from healthy to cancerous, making this a bad choice of datasets for investigating our new method.
 
 The ideal dataset would be time-series cell-type-specific transcriptional data from cells undergoing a well-characterized progression.
@@ -273,7 +273,7 @@ Through training, the SCVI algorithm found a nonlinear encoder for embedding eac
 We selected 100 random healthy cells and 100 random diseased cells and drew 100 lines connecting these cells\textquotesingle points in latent space.
 We randomly sampled one point in the latent space on each line and decoded these locations into transcriptional profiles.
 We then made plots for each gene showing the transcriptional trajectories seen across these 100 different paths through latent space.
-For each gene, we plotted each point's predicted expression given its interpolation alpha (the interpolation alpha being each point's distance from the sick end of the line such that the healthy cell itself has an interpolation alpha of 1, the sick cell has an interpolation alpha of 0, an artifical cell located halfway on the line connecting the healthy and sick cells has an interpolation alpha of .5, see Figure \ref{SERPINB1_graph}).
+For each gene, we plotted each point's predicted expression given its interpolation alpha (the interpolation alpha being each point's distance from the sick end of the line such that the healthy cell itself has an interpolation alpha of 1, the sick cell has an interpolation alpha of 0, an artificial cell located halfway on the line connecting the healthy and sick cells has an interpolation alpha of .5, see Figure \ref{SERPINB1_graph}).
 
 \begin{equation}
   \label{linearity_score}
@@ -284,8 +284,10 @@ To identify the genes our model predicts change nonlinearly over the transition 
 We defined this score as the sum of residuals for a quadratic line of best fit divided by the sum of residuals for a linear line of best fit for each gene's plot (see Equation \ref*{linearity_score}).
 We then ranked each gene by this linearity score.
 The intuition underlying this score is that standard differential expression analyses would be effective at identifying linear changes in expression between healthy and sick cells, but ineffective at identifying nonlinear changes.
-Thus by identifying those genes that have the best quadratic fit relative to their linear fit, we are identifying those genes our model predicts undergo a nonlinear change in transcription as they transition from sick to healthy that differnetial expression analysis likely would not have identified.
-This is a metric needs further consideration in future work.
+Thus by identifying those genes that have the best quadratic fit relative to their linear fit, we are identifying those genes our model predicts undergo a nonlinear change in transcription as they transition from sick to healthy that differential expression analysis likely would not have identified.
+This is a metric which needs further consideration in future work.
+
+Notably, the metric itself is not strongly integrated into the method, suggesting that the application of many alternative approaches to rank the interest in gene expression patterns may be worthwhile.
 
 
 \begin{figure}
@@ -313,12 +315,14 @@ For both datasets, the genes with the highest nonlinearity score were genes that
   \label{RP_gene_plot}
 \end{figure}
 
-\subsection{Our method makes assumptions our analysis is unable to support}
+\subsection{Necessary assumptions}
 Our model makes two overarching assumptions (see Figure \ref{assumptions}).
 First, it assumes that the disease affecting the sick cells of the dataset exists on a spectrum, or that there exists a spectrum between health and sickness.
 Second, it assumes that distances between points in latent space correspond to distances between states along this spectrum of illness.
 This second assumption is what guided our ordering of model-generated transcriptional profiles by interpolation alpha; we have made the assumption that a transcriptional profile generated from a point that is closer to a healthy cell than a sick cell in latent space will be more similar to the transcriptional profile of a healthy cell than the transcriptional profile of a sick cell.
-Unfortunately, the datasets we have worked with do not allow us to test these assumptions.
+Unfortunately, sufficiently validating these assumptions has proved difficult, and is something better undertaken with a longer timeline.
+
+Furthermore, the latent space of a nonlinear model is inherently nonlinear with respect to the features gene expression. On the surface, this calls into question how meaningful interpretations of linear interpolation can be in such a context. However, considering the inherent bias of deep neural networks for low-rank simplicity, we should expect as linear a relationship as possible (when applicable) justifying this assumption to an extent. For instance, consider the known near-linearity (in terms of visible features) of latent spaces of variational autoencoders applied to images. An alternate approach to alleviate this is expanded upon in one of the suggested next steps. 
 
 When selecting our datasets of interest, we first prioritized a disease of interest and then prioritized finding a large dataset with entirely one type of cell.
 As we discussed in our introduction, we should have worked with a large time-series scRNAseq dataset capturing a process with well-documented changes in transcriptional profiles over time.
@@ -334,9 +338,19 @@ As we discussed in our introduction, we should have worked with a large time-ser
 
 \section{Conclusion}
 Here we present a new method for generating transcriptional profiles of cells at intermediate states of transitioning between healthy and sick.
+
+This approach is incredibly flexible and begins to extend analysis of cell transitional trajectories in contexts where it may otherwise be impossible.
+
 Though the analysis of the method we present here is flawed, we believe that with more time these flaws can be adequately addressed.
 
-
+\section{Next Steps}
+We propose, in no order, suggested approaches to extend and improve our method.
+\begin{itemize}
+    \item  Linear interpolation in a nonlinear (with respect to the parameters we care about) space is inherently questionable. Rather than trusting the data to adequately represent the disease status of a cell, training a model to post-hoc rearrange the data on a more meaningful axis of sickness would completely alleviate this issue.
+    \item If the data manifold is non-convex when represented in the latent space, interpolated points may be off-manifold. Using a counterfactual approach along the lines of a term to keep paths on manifold may be worthwhile. However, this would make many of the other assumptions less tenable.
+    \item Earlier, we noted that our method is unsupervised with regards to the model itself. If some variant of clustering model is used and interpolation is done between the found clusters, then this could be applied to identify transitional behaviors within different modes a single type of cell can take on, provided that transitions between them are possible.
+    \item An exploration of alternate approaches to ranking identified genes of interest is strongly advised.
+\end{itemize}
 
 {
 \small
@@ -345,3 +359,4 @@ Though the analysis of the method we present here is flawed, we believe that wit
 
 
 \end{document}
+
