@@ -219,16 +219,6 @@ This dataset would need to be filtered for a specific cell type, but it is in-vi
 
 \section{Methods and abbreviated results}
 
-we visualized clustering of the sick and healthy labels in latent space using UMAP projections.
-We then drew lines between sick individuals and healthy individuals.
-We selected evenly distributed points along these lines and decoded each location into its own distinct transcriptional profile.
-For each gene, we plotted each point's predicted expression given its interpolation alpha (the interpolation alpha being each point's distance from the sick end of the line such that the healthy cell itself has an interpolation alpha of 1, the sick cell has an interpolation alpha of 0, an artifical cell located halfway on the line connecting the healthy and sick cells has an interpolation alpha of .5, see ).
-
-We selected 100 random healthy cells and 100 random diseased cells and drew 100 lines connecting these cells\textquotesingle points in latent space.
-We randomly sampled one point in the latent space on each line and decoded these locations into transcriptional profiles.
-We then made plots for each gene showing the transcriptional trajectories seen across these 100 different paths through latent space.
-We fit linear and quadratic lines to each of these plots and calculated the sum of residuals for the 
-
 \subsubsection{Aplastic Anemia Data}
 For this study we used the scRNA-seq data published by \citet{tonglin_single-cell_2022}.
 These data were from bone marrow samples taken from two healthy donors and two AA patients.
@@ -253,10 +243,25 @@ After filtering we had 156,123 cells with 23,144 genes.
 114,647 of these cells were from cancer patients and 41,521 of these cells were from healthy patients.
 
 \subsubsection{Principal Component and UMAP Visualizations}
-% In accordance with standards in the field, we wanted to visualize the data using principal component (PC) projection and UMAP.
+We visualized the latent space using PCA projection and UMAP Visualizations.
 We used the Scanpy python package \citep{wolf_scanpy_2018} to make these visualizations.
-For the PC projection, we projected the data onto the first two principal components which captured 10.6\% and 2.7\% of the overall variance of the dataset respectively.
+
+For the AA PC projection, we projected the data onto the first two principal components which captured 10.6\% and 2.7\% of the overall variance of the dataset respectively.
 We colored each cell by disease status (see Figure \ref{PCA_projections_disease}) and by individual (see Figure \ref{PCA_projections_individual}).
+
+For the cancer data, we exclusively visualized using PCA Projections.
+W e projected the data onto the first two principal components which captured 30\% and 16\% of the variance respectively.
+We colored each cell by disease status (see Figure \ref{cancer_PCA_projections}).
+
+\subsubsection{Training and Sampling from the Latent Space}
+We used the SCVI python package to perform SCVI on each dataset \citep{lopez_deep_2018}.
+
+For each gene, we plotted each point's predicted expression given its interpolation alpha (the interpolation alpha being each point's distance from the sick end of the line such that the healthy cell itself has an interpolation alpha of 1, the sick cell has an interpolation alpha of 0, an artifical cell located halfway on the line connecting the healthy and sick cells has an interpolation alpha of .5, see ).
+
+We selected 100 random healthy cells and 100 random diseased cells and drew 100 lines connecting these cells\textquotesingle points in latent space.
+We randomly sampled one point in the latent space on each line and decoded these locations into transcriptional profiles.
+We then made plots for each gene showing the transcriptional trajectories seen across these 100 different paths through latent space.
+We fit linear and quadratic lines to each of these plots and calculated the sum of residuals for the 
 
 \subsubsection{Linear Discriminant Analysis}
 We used the Scanpy python package \citep{wolf_scanpy_2018} to perform linear discriminant analysis (LDA) on the first 50 principal components of our data.
@@ -290,6 +295,12 @@ INSERT INFORMATION ABOUT THE TECNICAL DETAILS HERE.
   \label{PCA_projections_individual}
 \end{figure}
 
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5\textwidth]{cancer_pca.jpg}
+  \caption{Principal Component visualization of cancer data.}
+  \label{cancer_PCA_projections}
+\end{figure}
 
 \section{Discussion and Results}
 
