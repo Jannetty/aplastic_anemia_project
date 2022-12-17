@@ -98,10 +98,11 @@ Several of these methods also provide decoders that allow for translation from l
 \citet{gronbech_scvae_2018} and \citet{lopez_deep_2018} both discuss decoding latent-space representations of cells by using a nonlinear decoder to generate a posterior estimate of the expression of each gene in a cell.
 Our project is focused on investigating the possibility of using these tools to learn about changes in gene expression patterns as a cell transitions from healthy to sick.
 
-Throughout this project we aim to explore the following enormous assumption; given a latent space in which healthy and sick cells cluster apart from each other (such that there are healthy regions and sick regions in the space), do decoded locations between these regions correspond to transcriptional profiles of cells in transition between healthy and sick?
+Throughout this project we aim to explore the following enormous assumptions; given a latent space in which healthy and sick cells cluster apart from each other (such that there are healthy regions and sick regions in the space), do decoded locations between these regions correspond to transcriptional profiles of cells in transition between healthy and sick?
 Furthermore, do decoded locations closer to healthy regions than to sick regions correspond to transcriptional profiles of cells that are only slightly sick (and vice versa)?
-We begin by operating as though this is a fair assumption.
-We tried using this method using two separate datasets (both relevant to hematopoietic stem and progenitor cells, or HSPCs).
+The method we propose operates as though these two assumptions are fair.
+
+For this project, we worked with two separate datasets (both relevant to hematopoietic stem and progenitor cells, or HSPCs).
 For each, we trained the scVI model on scRNA-seq data with sick and healthy labels.
 Once scVI embedded each cell in latent space, we sampled the space between healthy and sick cells and used the model's nonlinear decoder to generate transcriptional profiles corresponding to each location.
 We then analyzed the model-predicted changes in gene expressions.
