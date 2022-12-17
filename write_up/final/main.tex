@@ -315,9 +315,13 @@ For both datasets, the genes with the highest nonlinearity score were genes that
 \subsection{Our method makes assumptions our analysis is unable to support}
 Our model makes two overarching assumptions (see Figure \ref{assumptions}).
 First, it assumes that the disease affecting the sick cells of the dataset exists on a spectrum, or that there exists a spectrum between health and sickness.
-Second, it assumes that 
+Second, it assumes that distances between points in latent space correspond to distances between states along this spectrum of illness.
+This second assumption is what guided our ordering of model-generated transcriptional profiles by interpolation alpha; we have made the assumption that a transcriptional profile generated from a point that is closer to a healthy cell than a sick cell in latent space will be more similar to the transcriptional profile of a healthy cell than the transcriptional profile of a sick cell.
+Unfortunately, the datasets we have worked with do not allow us to test these assumptions.
+
 When selecting our datasets of interest, we first prioritized a disease of interest and then prioritized finding a large dataset with entirely one type of cell.
-As we discussed in our introduction, ultimately the datasets we used leave us unable to address the two major assumptions of our model.
+As we discussed in our introduction, we should have worked with a large time-series scRNAseq dataset capturing a process with well-documented changes in transcriptional profiles over time.
+
 
 \begin{figure}
   \centering
