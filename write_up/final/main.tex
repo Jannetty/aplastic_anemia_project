@@ -153,15 +153,6 @@ For this project, we worked with two different datasets; an Aplastic Anemia data
   \label{approach}
 \end{figure}
 
-
-\begin{figure}
-  \centering
-  \includegraphics[width=0.5\textwidth]{SERPINB1.jpg}
-  \caption{An example of a highly ranked gene in our analysis generated from the \citet{ferrall-fairbanks_progenitor_2022} Leukemia data.
-  SERPINB1 is a neutrophil serine protease inhibitor that protects the cell from proteases released in the cytoplasm during stress or infection.}
-  \label{SERPINB1_graph}
-\end{figure}
-
 \subsubsection{Aplastic Anemia}
 Aplastic anemia (AA) is a condition in which a patient\textquotesingle s bone marrow fails to form enough red blood cells, white blood cells, and platelets, resulting in pancytopenia \citep{young_aplastic_2018}.
 Pathophysiological mechanisms of this disease include direct damage to bone marrow (commonly from chemotherapy), germ line loss-of-function mutations that interfere with blood-cell precursor DNA repair pathways, and autoimmune attack \citep{young_aplastic_2018}. 
@@ -253,34 +244,6 @@ For the cancer data, we exclusively visualized using PCA Projections.
 W e projected the data onto the first two principal components which captured 30\% and 16\% of the variance respectively.
 We colored each cell by disease status (see Figure \ref{cancer_PCA_projections}).
 
-\subsubsection{Training and Sampling from the Latent Space}
-We used the SCVI python package to perform SCVI on each dataset \citep{lopez_deep_2018}.
-
-For each gene, we plotted each point's predicted expression given its interpolation alpha (the interpolation alpha being each point's distance from the sick end of the line such that the healthy cell itself has an interpolation alpha of 1, the sick cell has an interpolation alpha of 0, an artifical cell located halfway on the line connecting the healthy and sick cells has an interpolation alpha of .5, see ).
-
-We selected 100 random healthy cells and 100 random diseased cells and drew 100 lines connecting these cells\textquotesingle points in latent space.
-We randomly sampled one point in the latent space on each line and decoded these locations into transcriptional profiles.
-We then made plots for each gene showing the transcriptional trajectories seen across these 100 different paths through latent space.
-We fit linear and quadratic lines to each of these plots and calculated the sum of residuals for the 
-
-\subsubsection{Linear Discriminant Analysis}
-We used the Scanpy python package \citep{wolf_scanpy_2018} to perform linear discriminant analysis (LDA) on the first 50 principal components of our data.
-We used 5-fold cross validation to assess the model's prediction accuracy.
-Our model accurately predicted the disease status of 98.2\% of the cells in the training data and 98.0\% of the cells in the test data.
-
-To assess whether LDA was distinguishing between transcriptome profiles of diseased vs healthy individuals or just differentiating between the individuals in general, we retrained the model using data from just two individuals (one sick and one diseased).
-We then used this model to predict the disease status of the other two individuals.
-We started by again using the first 50 principal components.
-Our model accurately predicted the disease status 48.5\% of the test cells.
-We switched the individuals that were used to train/test the model and found the resulting model accurately predicted the disease status of 67\% of the test cells.
-We also performed this analysis using the first 5 principal components, which yielded 56.6\% and 60.4\% testing accuracy for each training/test data pair.
-
-\subsubsection{scVI}
-We used the scvi-tools python package to perform scVI \citep{lopez_deep_2018, gayoso_python_2022}.
-INSERT INFORMATION ABOUT THE TECNICAL DETAILS HERE.
-
-
-% TODO: Put these in the correct locations and make the captions fit the figures.
 \begin{figure}
   \centering
   \includegraphics[width=0.5\textwidth]{disease_status.png}
@@ -301,6 +264,38 @@ INSERT INFORMATION ABOUT THE TECNICAL DETAILS HERE.
   \caption{Principal Component visualization of cancer data.}
   \label{cancer_PCA_projections}
 \end{figure}
+
+\subsubsection{Training and Sampling from the Latent Space}
+We used the SCVI python package to perform SCVI on each dataset \citep{lopez_deep_2018}.
+We selected 100 random healthy cells and 100 random diseased cells and drew 100 lines connecting these cells\textquotesingle points in latent space.
+We randomly sampled one point in the latent space on each line and decoded these locations into transcriptional profiles.
+We then made plots for each gene showing the transcriptional trajectories seen across these 100 different paths through latent space.
+For each gene, we plotted each point's predicted expression given its interpolation alpha (the interpolation alpha being each point's distance from the sick end of the line such that the healthy cell itself has an interpolation alpha of 1, the sick cell has an interpolation alpha of 0, an artifical cell located halfway on the line connecting the healthy and sick cells has an interpolation alpha of .5, see Figure \ref{SERPINB1_graph}).
+We fit linear and quadratic lines to each of these plots and calculated the sum of residuals for the 
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5\textwidth]{SERPINB1.jpg}
+  \caption{An example of a highly ranked gene in our analysis generated from the \citet{ferrall-fairbanks_progenitor_2022} Leukemia data.
+  SERPINB1 is a neutrophil serine protease inhibitor that protects the cell from proteases released in the cytoplasm during stress or infection.}
+  \label{SERPINB1_graph}
+\end{figure}
+
+\subsubsection{Linear Discriminant Analysis}
+We used the Scanpy python package \citep{wolf_scanpy_2018} to perform linear discriminant analysis (LDA) on the first 50 principal components of our data.
+We used 5-fold cross validation to assess the model's prediction accuracy.
+Our model accurately predicted the disease status of 98.2\% of the cells in the training data and 98.0\% of the cells in the test data.
+
+To assess whether LDA was distinguishing between transcriptome profiles of diseased vs healthy individuals or just differentiating between the individuals in general, we retrained the model using data from just two individuals (one sick and one diseased).
+We then used this model to predict the disease status of the other two individuals.
+We started by again using the first 50 principal components.
+Our model accurately predicted the disease status 48.5\% of the test cells.
+We switched the individuals that were used to train/test the model and found the resulting model accurately predicted the disease status of 67\% of the test cells.
+We also performed this analysis using the first 5 principal components, which yielded 56.6\% and 60.4\% testing accuracy for each training/test data pair.
+
+\subsubsection{scVI}
+We used the scvi-tools python package to perform scVI \citep{lopez_deep_2018, gayoso_python_2022}.
+INSERT INFORMATION ABOUT THE TECNICAL DETAILS HERE.
 
 \section{Discussion and Results}
 
