@@ -199,7 +199,8 @@ We aim to identify potential transient changes in gene expression that character
 % However, our work sheds light on what methods are useful when working with data collected from a very small number of individuals.
 
 \subsubsection{Chronic Myelomonocytic Leukemia}
-We selected the Chronic Myelomonocytic Leukemia data published by \citet{ferrall-fairbanks_progenitor_2022} because it was a large dataset (41,521 healthy cells from 5 individuals and 120,543 sick cells from 26 individuals) and because it was entirely cells from a very specific cell type (HSPCs expressing CD34).
+Chronic Myelomonocytic Leukemia is a cancer of the blood in which patient bone marrow makes too many white blood cells (monocytes) \citep{ferrall-fairbanks_progenitor_2022}.
+We selected the Chronic Myelomonocytic Leukemia data published by \citet{ferrall-fairbanks_progenitor_2022} for this project because it was a large dataset (41,521 healthy cells from 5 individuals and 120,543 sick cells from 26 individuals) and because it was entirely cells from a very specific cell type (HSPCs expressing CD34).
 We wanted a large number of individuals represented in the dataset while making sure the greatest differences between cells would be disease status as opposed to cell type.
 The similarity of cell type to our AA data was also convenient in our overall familiarity with the cells.
 
@@ -228,15 +229,12 @@ We randomly sampled one point in the latent space on each line and decoded these
 We then made plots for each gene showing the transcriptional trajectories seen across these 100 different paths through latent space.
 We fit linear and quadratic lines to each of these plots and calculated the sum of residuals for the 
 
-\subsection{Aplastic Anemia data analysis}
-
-\subsubsection{The Data}
+\subsubsection{Aplastic Anemia Data}
 For this study we used the scRNA-seq data published by \citet{tonglin_single-cell_2022}.
 These data were from bone marrow samples taken from two healthy donors and two AA patients.
 These data comprise 23685 HSPCs (14163 AA and 9522 healthy) with 33538 genes per cell.
 Sequencing was performed by 10x Genomics \citep{10X_genomics}.
 
-\subsubsection{Data Preprocessing}
 We downloaded the data from the NCBI Gene Expression Omnibus (https://www.ncbi.nlm.nih.gov/geo/ , GEO accession: GSE181989).
 We used the python package Scanpy \citep{wolf_scanpy_2018} to filter out all genes that were in fewer than 3 cells and all cells that had expression of fewer than 200 genes.
 After filtering, we had 22505 cells with 20059 genes.
