@@ -274,9 +274,12 @@ We randomly sampled one point in the latent space on each line and decoded these
 We then made plots for each gene showing the transcriptional trajectories seen across these 100 different paths through latent space.
 For each gene, we plotted each point's predicted expression given its interpolation alpha (the interpolation alpha being each point's distance from the sick end of the line such that the healthy cell itself has an interpolation alpha of 1, the sick cell has an interpolation alpha of 0, an artifical cell located halfway on the line connecting the healthy and sick cells has an interpolation alpha of .5, see Figure \ref{SERPINB1_graph}).
 
-To identify the genes our model predicts change nonlinearly over the transition from sick to healthy states, we calculated a nonlinearity score.
+To identify the genes our model predicts change nonlinearly over the transition from sick to healthy states, we calculated a nonlinearity score for each gene.
 We defined this score as the sum of residuals for a quadratic line of best fit divided by the sum of residuals for a linear line of best fit for each gene's plot (see Equation \ref*{linearity_score}).
-
+We then ranked each gene by this linearity score.
+The intuition underlying this score is that standard differential expression analyses would be effective at identifying linear changes in expression between healthy and sick cells, but ineffective at identifying nonlinear changes.
+Thus by identifying those genes that have the best quadratic fit relative to their linear fit, we are identifying those genes our model predicts undergo a nonlinear change in transcription as they transition from sick to healthy that differnetial expression analysis likely would not have identified.
+This is a metric needs further consideration in future work.
 
 \begin{equation}
   \label{linearity_score}
@@ -292,7 +295,7 @@ We defined this score as the sum of residuals for a quadratic line of best fit d
   \label{SERPINB1_graph}
 \end{figure}
 
-\subsubsection{Linear Discriminant Analysis}
+ \subsubsection{Linear Discriminant Analysis}
 We used the Scanpy python package \citep{wolf_scanpy_2018} to perform linear discriminant analysis (LDA) on the first 50 principal components of our data.
 We used 5-fold cross validation to assess the model's prediction accuracy.
 Our model accurately predicted the disease status of 98.2\% of the cells in the training data and 98.0\% of the cells in the test data.
