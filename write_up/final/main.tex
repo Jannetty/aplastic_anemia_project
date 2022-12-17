@@ -312,7 +312,24 @@ For both datasets, the genes with the highest nonlinearity score were genes that
   \label{RP_gene_plot}
 \end{figure}
 
+\subsection{Our method makes assumptions our analysis is unable to support}
+Our model makes two overarching assumptions (see Figure \ref{assumptions}).
+First, it assumes that the disease affecting the sick cells of the dataset exists on a spectrum, or that there exists a spectrum between health and sickness.
+Second, it assumes that 
+When selecting our datasets of interest, we first prioritized a disease of interest and then prioritized finding a large dataset with entirely one type of cell.
+As we discussed in our introduction, ultimately the datasets we used leave us unable to address the two major assumptions of our model.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5\textwidth]{assumptions.jpg}
+  \caption{Our model makes two assumptions.
+  It assumes that the disease affecting sick cells exists on a spectrum, and that distances between points in latent space correspond to distances between states on this spectrum of illness.}
+  \label{assumptions}
+\end{figure}
+
 \section{Conclusion}
+Here we present a new method for generating transcriptional profiles of cells at intermediate states of transitioning between healthy and sick.
+Though the analysis of the method we present here is flawed, we believe that with more time these flaws can be adequately addressed.
 
 
 
