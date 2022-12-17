@@ -240,6 +240,18 @@ We used the python package Scanpy \citep{wolf_scanpy_2018} to filter out all gen
 After filtering, we had 22505 cells with 20059 genes.
 [NUMBER] of these cells were from the two AA patients and [NUMBER] of these cells were from the two healthy controls.
 
+\subsubsection{Chronic Myelomonocytic Leukemia}
+For this study we used scRNA-seq data published by \citet{ferrall-fairbanks_progenitor_2022}.
+These were CD34+ HSPCs from 26 individuals with chronic myelomonocytic leukemia.
+We also aggregated healthy CD34+ HSPC transcription data from five of the eight individuals used by \citet{ferrall-fairbanks_progenitor_2022}.
+
+For the cancer data, we downladed the data from the NCBI GENE Expression Omnibus (https://www.ncbi.nlm.nih.gov/geo/ , GEO accession: GSE76203).
+We exclusively selected data from the 26 untreated individuals in the dataset.
+For the healthy data, one patient sample was from 10X Genomics at https://www.10xgenomics.com/resources/datasets/cd34-plus-cells-1-standard-1-1-0 and four patient samples were available from GEO under GSE133181.
+We again used the python package Scanpy to filter out all genes that were in fewer than 3 cells and all cells that had expression of fewer than 200 genes.
+After filtering we had 156,123 cells with 23,144 genes.
+114,647 of these cells were from cancer patients and 41,521 of these cells were from healthy patients.
+
 \subsubsection{Principal Component and UMAP Visualizations}
 % In accordance with standards in the field, we wanted to visualize the data using principal component (PC) projection and UMAP.
 We used the Scanpy python package \citep{wolf_scanpy_2018} to make these visualizations.
